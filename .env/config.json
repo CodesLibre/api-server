@@ -1,0 +1,16 @@
+{
+    "db":{
+        "host": "localhost",
+        "protocol": "mongodb",
+        "port":27017,
+        "database":"storybook",
+        "username": "",
+        "password": ""
+    },
+    "server":{
+        "port": null,
+        "auth":{
+            "JSWSECRET":""
+        }
+    }
+}
