@@ -1,7 +1,7 @@
 import express from "express"
 import { readFileSync } from "fs"
 import { join } from "path"
-import {startApolloServer} from "../graphql"
+import startApolloServer from "../graphql"
 import { typeDefs, resolvers } from "../graphql/args"
 import route from "../router"
 import * as db from './db'
@@ -34,6 +34,7 @@ app.use("/static", express.static(join(__dirname, 'public')))
  * routage des requêtes http
  */
 app.use(route)
+db.connect();
 /**
  * demarrage du serveur graphql-appolo
  */

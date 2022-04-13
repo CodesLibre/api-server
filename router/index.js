@@ -1,7 +1,7 @@
-const express = require("express")
-const { join } = require("path")
-const route = express.Router()
+import {Router} from "express"
+import { join } from "path"
+const route = Router()
 route.get('/',(req, res)=>{
     res.send("Connected to server")
 })
-module.exports = route
+export default route

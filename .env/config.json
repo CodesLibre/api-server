@@ -3,14 +3,14 @@
         "host": "localhost",
         "protocol": "mongodb",
         "port":27017,
-        "database":"storybook",
+        "database":"myContentTube",
         "username": "",
         "password": ""
     },
     "server":{
         "port": null,
         "auth":{
-            "JSWSECRET":""
+            "JWTSECRET":"This is an API SERVER"
         }
     }
 }
