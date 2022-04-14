@@ -7,6 +7,8 @@ const articleShema = new Schema({
     author: {type:Schema.Types.ObjectId, ref: "User" },
     favoritedBy: [{type:Schema.Types.ObjectId, ref: "User" }],
     favoriteCount: {type:Number, default: 0 },
+    likedBy: [{type:Schema.Types.ObjectId, ref: "User" }],
+    likeCount: {type:Number, default: 0 },
 },{
     timestamps: true
 })

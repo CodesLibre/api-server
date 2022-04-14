@@ -178,3 +178,40 @@ export async function toggleFavorite(parent, {id}, {user}){
                 new: true
             })
 }
+
+export async function toggleLike(parent, {id}, {user}){
+    if(!user)
+        throw new AuthenticationError('You must be signed in to change information')
+    const article = await Article.findById(id)
+    const hasUser = article.likedBy.find(l=>String(l) === user.id)
+    console.log(hasUser)
+    if(!hasUser){
+        await Article.findOneAndUpdate({
+            _id: id
+        },{
+            $push: {
+                likedBy: Types.ObjectId(user.id)
+            },
+            $inc: {
+                likeCount: 1
+            }
+        },{
+            new: true
+        })
+        return true;
+    }
+    else {
+        await Article.findByIdAndUpdate(
+            id,{
+                $pull:{
+                    likedBy: Types.ObjectId(user.id)
+                },
+                $inc:{
+                    likeCount: -1
+                }
+            },{
+                new: true
+            })
+        return false;
+    }
+}

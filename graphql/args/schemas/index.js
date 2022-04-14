@@ -21,7 +21,6 @@ type User{
     subscribes: [User!]!
     subscribedBy: [User!]!
     subscribeCount: Int!
-    comments:[Article!]!
     createAt: DateTime!
     updateAt: DateTime!
 }
@@ -73,6 +72,9 @@ type Mutation{
     updateArticle(id:ID!,title:String,textContent:String,videoLink:String):Article!
     deleteArticle(id:ID!):Boolean!
     toggleFavorite(id:ID!):Article! 
+    toggleLike(id:ID!):Boolean!
+    #comment section
+    
     #user section
     signup(
         firstName:String!, 

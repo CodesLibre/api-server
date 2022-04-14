@@ -15,13 +15,11 @@ async function startApolloServer(app, typeDefs, resolvers){
         resolvers,
         context: ({req})=>{
             let auth = req.headers.authorization
-            
             // get user token authorization from headers
             const token = req.headers.authorization
             //retreive a user with the token
             const user = getUser(token)
             // add user context
-            console.log(user)
             return {user}
         }
     })
