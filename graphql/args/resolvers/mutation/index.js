@@ -1,4 +1,4 @@
-import {User, Article} from  "../../../models"
+import {User, Article, Comment} from  "../../../models"
 import { hash, compare} from "bcrypt"
 import jwt from "jsonwebtoken";
 import env from "../../../../.env/config.json";
@@ -42,7 +42,9 @@ export async function signin(parent, {email, password}){
 
 export async function updateUser(parent, {id, firstName, subName, sexe, email},{user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
+    if(id !== user.id)
+        throw new ForbiddenError("You don't have permissions to do this action")
     return await User.updateOne({_id: id}, {$set: {
             firstName, subName, sexe, email
         }},
@@ -50,9 +52,11 @@ export async function updateUser(parent, {id, firstName, subName, sexe, email},{
             new : true
         })
 }
-export async function deleteUser(parent, {id}){
+export async function deleteUser(parent, {id}, {user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
+    if(id !== user.id)
+        throw new ForbiddenError("You don't have permissions to do this action")
     try{
         await User.findOneAndRemove({_id: id})
         return true
@@ -62,7 +66,7 @@ export async function deleteUser(parent, {id}){
 }
 export async function toggleSubscribe(parent, {id}, {user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
     const _user = await User.findById(id)
     const hasUser = _user.subscribedBy.find(u=>String(u) === user.id)
     console.log(hasUser)
@@ -94,7 +98,7 @@ export async function toggleSubscribe(parent, {id}, {user}){
 }
 export async function makeDataUserPrivated(parent, {id, privatedData}, {user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
     try{
         await User.updateOne({_id: id}, {$set: {
             privatedData
@@ -108,9 +112,18 @@ export async function makeDataUserPrivated(parent, {id, privatedData}, {user}){
     }
 }
 
+/** SECTION ARTICLE */
+
+/**
+ * 
+ * @param {*} parent 
+ * @param {title, textContent, videoLink} object1 
+ * @param {user} object2 
+ * @returns Article
+ */
 export async function newArticle(parent, {title, textContent, videoLink}, {user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
     return await Article.create({
         title: title,
         textContent: textContent,
@@ -120,10 +133,10 @@ export async function newArticle(parent, {title, textContent, videoLink}, {user}
 
 export async function updateArticle(parent, {id, title, textContent, videoLink}, {user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
     const article = await Article.findById(id)
     if(article && String(article.author) !== user.id)
-        throw new ForbiddenError("You don't have permissions to delete the article")
+        throw new ForbiddenError("You don't have permissions to do this action")
     return await User.findOneAndUpdate({_id: id}, {$set: {
         title, textContent, videoLink
     }},
@@ -131,13 +144,19 @@ export async function updateArticle(parent, {id, title, textContent, videoLink},
         new : true
     })
 }
-
+/**
+ * 
+ * @param {*} parent Object
+ * @param {id} param1 Object
+ * @param {user} param2 Object
+ * @returns Boolean
+ */
 export async function deleteArticle(parent, {id}, {user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
     const article = await Article.findById(id)
     if(article && String(article.author) !== user.id)
-        throw new ForbiddenError("You don't have permissions to delete the article")
+        throw new ForbiddenError("You don't have permissions to do this action")
     try{
         article.remove()
         return true
@@ -145,10 +164,16 @@ export async function deleteArticle(parent, {id}, {user}){
         return false
     }
 }
-
+/**
+ * 
+ * @param {*} parent Object
+ * @param {id} param1 Object
+ * @param {user} param2 Object
+ * @returns Article
+ */
 export async function toggleFavorite(parent, {id}, {user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
     const article = await Article.findById(id)
     const hasUser = article.favoritedBy.find(a=>String(a) === user.id)
     console.log(hasUser)
@@ -178,10 +203,16 @@ export async function toggleFavorite(parent, {id}, {user}){
                 new: true
             })
 }
-
+/**
+ * 
+ * @param {*} parent Object
+ * @param {id} param1 Object
+ * @param {user} param2 Object
+ * @returns Boolean
+ */
 export async function toggleLike(parent, {id}, {user}){
     if(!user)
-        throw new AuthenticationError('You must be signed in to change information')
+        throw new AuthenticationError('You must be signed in to do anything')
     const article = await Article.findById(id)
     const hasUser = article.likedBy.find(l=>String(l) === user.id)
     console.log(hasUser)
@@ -213,5 +244,44 @@ export async function toggleLike(parent, {id}, {user}){
                 new: true
             })
         return false;
+    }
+}
+
+/** SECTION COMMENT */
+
+export async function newComment(parent, {id, content}, {user}){
+    if(!user)
+        throw new AuthenticationError('You must be signed in to do anything')
+    const article = await Article.findById(id)
+    return Comment.create({
+        content : content,
+        commentedBy: Types.ObjectId(user.id),
+        article: Types.ObjectId(article.id)
+    })
+}
+
+export async function updateComment(parent, {id, content}, {user}){
+    if(!user)
+        throw new AuthenticationError('You must be signed in to do anything')
+    const comment = await Comment.findById(id)
+    return Comment.findByIdAndUpdate(
+        id,{
+            $set:{content : content}
+    },{
+        new: true
+    })
+}
+
+export async function deleteComment(parent, {id}, {user}){
+    if(!user)
+        throw new AuthenticationError('You must be signed in to do anything')
+    const comment = await Comment.findById(id)
+    if(comment && String(comment.commenteBy) !== user.id)
+        throw new ForbiddenError("You don't have permissions to do this action")
+    try{
+        comment.remove()
+        return true
+    }catch(err){
+        return false
     }
 }

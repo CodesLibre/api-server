@@ -44,7 +44,6 @@ type Comment{
     commentedBy:User!
     content:String!
     article:Article!
-    answers:[Answer!]!
     createAt: DateTime!
     updateAt: DateTime!
 }
@@ -74,7 +73,9 @@ type Mutation{
     toggleFavorite(id:ID!):Article! 
     toggleLike(id:ID!):Boolean!
     #comment section
-    
+    newComment(id:ID!,content:String!):Comment!
+    updateComment(id:ID!,content:String!):Comment! #id Comment
+    deleteComment(id:ID!):Boolean!
     #user section
     signup(
         firstName:String!, 
