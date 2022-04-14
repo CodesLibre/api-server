@@ -10,8 +10,8 @@ const userShema = new Schema({
     email: {type:String, required: true},
     password: {type:String, required: false},
     avatar: {type:String},
-    articles: [{type:Schema.Types.ObjectId, ref:"Article"}],
-    favorites: [{type:Schema.Types.ObjectId, ref:"Article"}],
+    subscribedBy: [{type:Schema.Types.ObjectId, ref:"User"}],
+    subscribeCount: {type:Number, default:0},
     privatedData: [{type:String, required: true}],
 },{
     timestamps: true

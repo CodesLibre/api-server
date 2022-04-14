@@ -60,7 +60,38 @@ export async function deleteUser(parent, {id}){
         return false
     }
 }
-
+export async function toggleSubscribe(parent, {id}, {user}){
+    if(!user)
+        throw new AuthenticationError('You must be signed in to change information')
+    const _user = await User.findById(id)
+    const hasUser = _user.subscribedBy.find(u=>String(u) === user.id)
+    console.log(hasUser)
+    if(!hasUser)
+        return await User.findOneAndUpdate({
+            _id: id
+        },{
+            $push: {
+                subscribedBy: Types.ObjectId(user.id)
+            },
+            $inc: {
+                subscribeCount: 1
+            }
+        },{
+            new: true
+        })
+    else 
+        return await User.findByIdAndUpdate(
+            id,{
+                $pull:{
+                    subscribedBy: Types.ObjectId(user.id)
+                },
+                $inc:{
+                    subscribeCount: -1
+                }
+            },{
+                new: true
+            })
+}
 export async function makeDataUserPrivated(parent, {id, privatedData}, {user}){
     if(!user)
         throw new AuthenticationError('You must be signed in to change information')
@@ -120,5 +151,30 @@ export async function toggleFavorite(parent, {id}, {user}){
         throw new AuthenticationError('You must be signed in to change information')
     const article = await Article.findById(id)
     const hasUser = article.favoritedBy.find(a=>String(a) === user.id)
-    return {}
+    console.log(hasUser)
+    if(!hasUser)
+        return await Article.findOneAndUpdate({
+            _id: id
+        },{
+            $push: {
+                favoritedBy: Types.ObjectId(user.id)
+            },
+            $inc: {
+                favoriteCount: 1
+            }
+        },{
+            new: true
+        })
+    else 
+        return await Article.findByIdAndUpdate(
+            id,{
+                $pull:{
+                    favoritedBy: Types.ObjectId(user.id)
+                },
+                $inc:{
+                    favoriteCount: -1
+                }
+            },{
+                new: true
+            })
 }

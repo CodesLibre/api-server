@@ -21,6 +21,7 @@ type User{
     subscribes: [User!]!
     subscribedBy: [User!]!
     subscribeCount: Int!
+    comments:[Article!]!
     createAt: DateTime!
     updateAt: DateTime!
 }
@@ -32,9 +33,32 @@ type Article{
     author: User!
     favoriteCount: Int!
     favoritedBy: [User!]!
+    likedBy: [User!]!
+    likeCount:Int!
+    comments:[Comment!]!
     createAt: DateTime!
     updateAt: DateTime!
 }
+
+type Comment{
+    id:ID!
+    commentedBy:User!
+    content:String!
+    article:Article!
+    answers:[Answer!]!
+    createAt: DateTime!
+    updateAt: DateTime!
+}
+
+type Answer{
+    id:ID!
+    answeredBy:User!
+    content:String!
+    comment:Comment!
+    createAt: DateTime!
+    updateAt: DateTime!
+}
+
 type Query{
     users: [User!]!
     user(email:String!): User
@@ -48,6 +72,7 @@ type Mutation{
     newArticle(title:String!,textContent:String!,videoLink:String):Article!
     updateArticle(id:ID!,title:String,textContent:String,videoLink:String):Article!
     deleteArticle(id:ID!):Boolean!
+    toggleFavorite(id:ID!):Article! 
     #user section
     signup(
         firstName:String!, 
@@ -67,5 +92,5 @@ type Mutation{
     ): User!
     deleteUser(id:ID): Boolean!
     makeDataUserPrivated(id:ID,privatedData:[String!]!):[String!]!
-    toggleFavorite(id:ID!):Article! # id user
+    toggleSubscribe(id:ID!):User!
 }`;
