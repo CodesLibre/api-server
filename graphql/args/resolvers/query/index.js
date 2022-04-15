@@ -27,5 +27,5 @@ export async function me(parent, {}, {user}){
             _user[el] = null
     return _user
 }
-export async function articles(){return await Article.find()}
+export async function articles(){return await Article.find({}).sort({_id:-1})}
 export async function article (parent, args){return await Article.findById(args.id)}

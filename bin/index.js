@@ -5,6 +5,7 @@ import startApolloServer from "../graphql"
 import { typeDefs, resolvers } from "../graphql/args"
 import route from "../router"
 import * as db from './db'
+import cors from 'cors'
 
 const app = express()
 const file = readFileSync(join(process.cwd(),'.env/config.json'),"utf8")
@@ -18,13 +19,14 @@ app.set('trust proxy', 1) // trust first proxy
 app.set('port', config.server.port || 4000);
 app.set('appName', 'api-server');
 // Configuration du CORS
-app.use((req, res, next)=>{
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT, UPDATE, PATCH, DELETE, OPTIONS')
-    res.setHeader('Access-Control-Allow-Credentials', false)
-    next()
-})
+app.use(cors())
+// app.use((req, res, next)=>{
+//     res.setHeader('Access-Control-Allow-Origin', '*')
+//     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+//     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT, UPDATE, PATCH, DELETE, OPTIONS')
+//     res.setHeader('Access-Control-Allow-Credentials', false)
+//     next()
+// })
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
