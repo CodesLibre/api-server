@@ -1,10 +1,7 @@
 import { gql } from 'apollo-server-express'
 export default gql`
 scalar DateTime
-type StatutPrivate{
-    user: User!
-    list: [String!]!
-}
+
 type User{
     id: ID!
     firstName: String!
@@ -15,9 +12,11 @@ type User{
     postalCode: Int
     email: String!
     avatar: String
-    articles:[Article!]!
     privatedData: [String!]!
+    articles: [Article!]!
     favorites: [Article!]!
+    reads: [Article!]!
+    views: [Article!]!
     subscribes: [User!]!
     subscribedBy: [User!]!
     subscribeCount: Int!
@@ -30,10 +29,19 @@ type Article{
     textContent: String!
     videoLink: String
     author: User!
+    numberPages: Int!
+    nextArticle: Article
+    prevArticle: Article
     favoriteCount: Int!
     favoritedBy: [User!]!
     likedBy: [User!]!
     likeCount:Int!
+    unlikedBy: [User!]!
+    unlikeCount:Int!
+    readingBy: [User!]!
+    readingCount: Int!
+    viewedBy: [User!]!
+    viewsCount: Int!
     comments:[Comment!]!
     createAt: DateTime!
     updateAt: DateTime!
@@ -43,7 +51,8 @@ type Comment{
     id:ID!
     commentedBy:User!
     content:String!
-    article:Article!
+    linkedToArticle:Article!
+    answers: [Answer!]!
     createAt: DateTime!
     updateAt: DateTime!
 }
@@ -52,7 +61,7 @@ type Answer{
     id:ID!
     answeredBy:User!
     content:String!
-    comment:Comment!
+    toComment:Comment!
     createAt: DateTime!
     updateAt: DateTime!
 }
