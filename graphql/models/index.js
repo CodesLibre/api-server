@@ -5,4 +5,5 @@
 import User from './users'
 import Article from './articles'
 import Comment from './comment'
-export {User, Article, Comment};
+import Answer from './answer'
+export {User, Article, Comment, Answer};
