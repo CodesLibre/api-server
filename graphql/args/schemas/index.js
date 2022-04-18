@@ -72,6 +72,7 @@ type Query{
     me: User!
     articles: [Article!]!
     article(id:ID!):Article!
+    comment(id:ID):Comment!
 }
 
 type Mutation{
