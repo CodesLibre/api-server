@@ -1,4 +1,4 @@
-import {User, Article} from "../../../models"
+import {User, Article, Comment} from "../../../models"
 import {AuthenticationError, ForbiddenError} from "apollo-server-express"
 export async function users(){
     const users =  await User.find({})
@@ -12,13 +12,13 @@ export async function users(){
     return users
 }
 export async function user (parent, {email}){
-    const user = await User.findOne({email})
-    if(user)
-        for(const el of user.privatedData)
-            user[el] = null
-    return user
+    const _user = await User.findOne({email})
+    if(_user)
+        for(const el of _user.privatedData)
+            _user[el] = null
+    return _user
 }
-export async function me(parent, {}, {user}){
+export async function me(){
     if(!user)
         throw new AuthenticationError('You must be signed in')
     const _user = await User.findById(user.id)
@@ -27,5 +27,13 @@ export async function me(parent, {}, {user}){
             _user[el] = null
     return _user
 }
-export async function articles(){return await Article.find({}).sort({_id:-1})}
-export async function article (parent, args){return await Article.findById(args.id)}
+export async function articles(){
+    return await Article.find({}).sort({_id:-1})
+}
+export async function article (parent, args){
+    return await Article.findById(args.id)
+}
+
+export async function comment(parent, {id}){
+    return await Comment.findById(id)
+}
