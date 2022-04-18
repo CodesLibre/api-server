@@ -1,4 +1,4 @@
-import {User, Article, Comment} from "../../../models"
+import {User, Article, Comment, Answer} from "../../../models"
 import {AuthenticationError, ForbiddenError} from "apollo-server-express"
 export async function users(){
     const users =  await User.find({})
@@ -33,7 +33,9 @@ export async function articles(){
 export async function article (parent, args){
     return await Article.findById(args.id)
 }
-
 export async function comment(parent, {id}){
     return await Comment.findById(id)
+}
+export async function answer(parent, {id}){
+    return await Answer.findById(id)
 }
