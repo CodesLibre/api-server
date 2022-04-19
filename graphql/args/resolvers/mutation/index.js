@@ -1,4 +1,4 @@
-import {User, Article, Comment} from  "../../../models"
+import {User, Article, Comment, Answer} from  "../../../models"
 import { hash, compare} from "bcrypt"
 import jwt from "jsonwebtoken";
 import env from "../../../../.env/config.json";
@@ -58,6 +58,12 @@ export async function deleteUser(parent, {id}, {user}){
     if(id !== user.id)
         throw new ForbiddenError("You don't have permissions to do this action")
     try{
+        const articles = await Article.find({author: id})
+        const comments = await Comment.find({commenteBy: id})
+        const answers = await Answer.find({answeredBy: id})
+        articles.map(a=>a.remove())
+        comments.map(a=>a.remove())
+        answers.map(a=>a.remove())
         await User.findOneAndRemove({_id: id})
         return true
     }catch(err){
